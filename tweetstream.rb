@@ -70,7 +70,7 @@ end
   #for each matched term, push to the results
   matched_terms.each do |term|
     # REDIS.INCR "#{term}_count" #TODO: can be deprecated with scores set...
-    REDIS.ZINCBRY "scores",1,term
+    REDIS.ZINCRBY "scores",1,term
     REDIS.PUBLISH "#{term}_stream", status_json
     REDIS.LPUSH "#{term}_tweets", status_json
     REDIS.LTRIM "#{term}_tweets",0,9
