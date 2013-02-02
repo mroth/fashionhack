@@ -1,10 +1,5 @@
 source :rubygems
 
-# group :development do
-#   gem 'heroku'
-#   gem 'foreman'
-# end
-
 group :web, :streamer do
   gem 'redis'
   gem 'oj'
@@ -22,8 +17,3 @@ group :streamer do
   gem 'tweetstream', "~> 2.1.0"
   gem 'colored'
 end
-
-# group :production do
-#   gem 'newrelic_rpm'
-# end
-
