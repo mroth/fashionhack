@@ -23,6 +23,9 @@ VERBOSE = ENV["VERBOSE"] || false
 
 #setup
 $stdout.sync = true
+log = Logger.new(STDOUT)
+log.level = Logger::DEBUG
+
 #TODO: load terms from json
 #TODO: create name->twitter hash map
 TERMS = ["@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
@@ -45,6 +48,12 @@ end
     :username => status.user.screen_name
   }
   status_json = Oj.dump(status_small)
+
+  #TODO: try to detect images
+  detected_image = false
+  # status.entities.urls.each do |url|
+    # log.debug "detected url: #{url}"
+  # end
 
   #figure out which term we matched
   #TODO normalize terms to twitter
