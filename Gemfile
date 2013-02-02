@@ -1,9 +1,9 @@
 source :rubygems
 
-group :development do
-  gem 'heroku'
-  gem 'foreman'
-end
+# group :development do
+#   gem 'heroku'
+#   gem 'foreman'
+# end
 
 group :web, :streamer do
   gem 'redis'
@@ -23,7 +23,7 @@ group :streamer do
   gem 'colored'
 end
 
-group :production do
-  gem 'newrelic_rpm'
-end
+# group :production do
+#   gem 'newrelic_rpm'
+# end
 
