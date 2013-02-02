@@ -23,6 +23,8 @@ VERBOSE = ENV["VERBOSE"] || false
 
 #setup
 $stdout.sync = true
+#TODO: load terms from json
+#TODO: create name->twitter hash map
 TERMS = ["@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
 
 puts "Setting up a stream to track terms '#{TERMS}'..."
@@ -43,19 +45,21 @@ end
     :username => status.user.screen_name
   }
   status_json = Oj.dump(status_small)
+
+  #figure out which term we matched
+  #TODO normalize terms to twitter
   
-  # if status.text =~ /#{DOGTERMS.join('|')}/i
-  #   puts "   ...doggie!" if VERBOSE
-  #   REDIS.INCR 'dog_count'
-  #   REDIS.PUBLISH 'stream.tweets.dog', status_json
-  #   REDIS.LPUSH 'dog_tweets', status_json
-  #   REDIS.LTRIM 'dog_tweets',0,9
-  # end
-  # if status.text =~ /#{CATTERMS.join('|')}/i
-  #   puts "   ...kitty!" if VERBOSE
-  #   REDIS.INCR 'cat_count'
-  #   REDIS.PUBLISH 'stream.tweets.cat', status_json
-  #   REDIS.LPUSH 'cat_tweets', status_json
-  #   REDIS.LTRIM 'cat_tweets',0,9
-  # end
+  matched_terms = []
+  TERMS.each do |term|
+   matched_terms.push(term) if status.text.include? term
+  end
+
+  #for each matched term, push to the results
+  matched_terms.each do |term|
+    REDIS.INCR "#{term}_count"
+    REDIS.PUBLISH "#{term}_stream", status_json
+    REDIS.LPUSH "#{term}_tweets", status_json
+    REDIS.LTRIM "#{term}_tweets",0,9
+  end
+
 end
