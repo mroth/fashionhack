@@ -9,9 +9,9 @@ configure do
   REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
   Oj.mimic_JSON
 end
-configure :production do
-  require 'newrelic_rpm'
-end
+# configure :production do
+#   require 'newrelic_rpm'
+# end
 conns = []
 
 get '/' do
