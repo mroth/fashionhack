@@ -28,7 +28,7 @@ log.level = Logger::DEBUG
 
 #TODO: load terms from json
 #TODO: create name->twitter hash map
-TERMS = ["@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
+TERMS = ["#fashionhack","@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
 
 puts "Setting up a stream to track terms '#{TERMS}'..."
 @client = TweetStream::Client.new
@@ -49,11 +49,15 @@ end
   }
   status_json = Oj.dump(status_small)
 
-  #TODO: try to detect images
-  detected_image = false
-  # status.entities.urls.each do |url|
-    # log.debug "detected url: #{url}"
-  # end
+  #try to detect images
+  detected_images = []
+  status.urls.each do |url|
+    url = url.expanded_url
+    url_is_image = true ? url.end_with?(".jpg",".jpeg",".gif",".png") : false
+    log.debug "   -> detected url: #{url}"
+    log.debug "   -> OMG ITS AN IMAGE!" if url_is_image
+    detected_images << url if url_is_image
+  end
 
   #figure out which term we matched
   #TODO normalize terms to twitter
@@ -69,6 +73,12 @@ end
     REDIS.PUBLISH "#{term}_stream", status_json
     REDIS.LPUSH "#{term}_tweets", status_json
     REDIS.LTRIM "#{term}_tweets",0,9
+
+    detected_images.each do |img|
+      REDIS.INCR "#{term}_image_count"
+      REDIS.LPUSH "#{term}_images", img
+      REDIS.LTRIM "#{term}_images",0,9
+    end
   end
 
 end
