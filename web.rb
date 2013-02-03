@@ -57,19 +57,19 @@ get '/subscribe' do
   end
 end
 
-Thread.new do
-  uri = URI.parse(ENV["REDISTOGO_URL"])
-  redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+# Thread.new do
+#   uri = URI.parse(ENV["REDISTOGO_URL"])
+#   redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
 
-  redis.psubscribe('stream.tweets.*') do |on|
-    on.pmessage do |match, channel, message|
-      type = channel.sub('stream.tweets.', '')
+#   redis.psubscribe('stream.tweets.*') do |on|
+#     on.pmessage do |match, channel, message|
+#       type = channel.sub('stream.tweets.', '')
 
-      conns.each do |out|
-        out << "event: #{channel}\n"
-        out << "data: #{message}\n\n"
-      end
-    end
-  end
+#       conns.each do |out|
+#         out << "event: #{channel}\n"
+#         out << "data: #{message}\n\n"
+#       end
+#     end
+#   end
 
-end
+# end
