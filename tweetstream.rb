@@ -60,7 +60,7 @@ end
   detected_images = []
   status.urls.each do |url|
     url = url.expanded_url
-    url_is_image = true ? url.end_with?(".jpg",".jpeg",".gif",".png") : false
+    url_is_image = true ? url.start_with?('http://instagr.am/p/') : false
     log.debug "   -> detected url: #{url}"
     log.debug "   -> OMG ITS AN IMAGE!" if url_is_image
     detected_images << url if url_is_image
