@@ -39,7 +39,7 @@ get '/data' do
                           score: @brand_score, 
                           image_count: @brand_image_count, 
                           recent_tweets: @brand_recent_tweets,
-                          receent_images: @brand_recent_images
+                          recent_images: @brand_recent_images
                         }
                       }
   end
