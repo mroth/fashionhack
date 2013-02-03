@@ -4,6 +4,7 @@ require 'oj'
 require 'colored'
 require 'redis'
 require 'uri'
+require './lib/terms'
 
 # configure tweetstream instance
 TweetStream.configure do |config|
@@ -24,22 +25,13 @@ VERBOSE = ENV["VERBOSE"] || false
 #setup
 $stdout.sync = true
 log = Logger.new(STDOUT)
-log.level = Logger::DEBUG
+log.level = Logger::DEBUG if VERBOSE
 
-#TODO: load terms from json
-#TODO: create name->twitter hash map
+#DONE: load terms from json
+#DONE: create name->twitter hash map
+TERMS=Terms.new()
 
-if ENV["TERMS_CONF"]
-  designer_map = Oj.load_file(ENV["TERMS_CONF"])
-  term_map = designer_map.invert
-  TERMS = designer_map.to_a.flatten
-  designer_map.each {|k,v| hashtag = v.gsub(/\s+/, ""); term_map[hashtag] = k; TERMS << hashtag}
-  TERMS.uniq!
-else
-  TERMS = ["#fashionhack","@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
-end
-
-puts "Setting up a stream to track terms '#{TERMS}'..."
+puts "Setting up a stream to track terms '#{TERMS.list}'..."
 @client = TweetStream::Client.new
 @client.on_error do |message|
   # Log your error message somewhere
@@ -49,7 +41,7 @@ end
   # do something
   puts "RATE LIMITED LOL"
 end
-@client.track(TERMS) do |status|
+@client.track(TERMS.list) do |status|
   puts " ** @#{status.user.screen_name}: ".green + status.text.white if VERBOSE
   status_small = {
     :id => status.id.to_s,
@@ -75,21 +67,16 @@ end
   end
 
   #figure out which term we matched
-  #TODO normalize terms to twitter
-  
+  #and normalize terms to twitter
   matched_terms = []
-  TERMS.each do |term|
+  TERMS.list.each do |term|
     if status.text.include? term
-      if term_map and term_map.has_key?(term)
-        term = term_map[term]
-      end
-      matched_terms.push(term)
+      matched_terms.push(TERMS.normalize(term))
     end
   end
 
   #for each matched term, push to the results
   matched_terms.each do |term|
-    # REDIS.INCR "#{term}_count" #TODO: can be deprecated with scores set...
     REDIS.pipelined do
       REDIS.ZINCRBY "scores",1,term
       REDIS.PUBLISH "#{term}_stream", status_json
