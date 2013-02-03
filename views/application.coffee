@@ -9,8 +9,11 @@ methods related to the polling UI
 
 refreshImages = (latest_images) ->
   il=$("#latest_images ul")
+  il.hide()
+  il.empty()
   for image in latest_images
     il.append("<li><a href='#{image}'> * </a></li>")
+  il.fadeIn()
 
 refreshLeaderboard = (details) ->
   ll=$("#leaderboard ol")
