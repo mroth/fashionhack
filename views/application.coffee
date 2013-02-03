@@ -4,7 +4,13 @@ methods related to the polling UI
 @refreshUIFromServer = ->
   $.get('/data', (response) -> 
     refreshLeaderboard response.details
+    refreshImages response.details
   , "json")
+
+refreshImages = (details) ->
+  il=$("#latest_images ul")
+  for image in details.latest_images
+    il.append("<li><a href='#{image}'> * </a></li>")
 
 refreshLeaderboard = (details) ->
   ll=$("#leaderboard ol")

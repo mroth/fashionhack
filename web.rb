@@ -24,7 +24,7 @@ end
 
 get '/data' do
   @rank = REDIS.zrevrange 'scores',0,19
-
+  @latest_images = REDIS.lrange 'latest_images',0,9
   brand_details = []
   @rank.each do |brand|
     # REDIS.pipelined do
@@ -47,6 +47,7 @@ get '/data' do
   content_type :json
   Oj.dump( {
     'rank'  => @rank,
+    'latest_images' => @latest_images,
     'details' => brand_details
   } )
 end
