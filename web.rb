@@ -32,12 +32,14 @@ get '/data' do
       @brand_image_count = REDIS.get "#{brand}_image_count"
       @brand_recent_tweets = REDIS.lrange "#{brand}_tweets",0,4
       @brand_recent_tweets.map! { |t| JSON.parse(t) }
+      @brand_recent_images = REDIS.lrange "#{brand}_images",0,4
     # end
     brand_details << {name: brand, 
                         info: {
                           score: @brand_score, 
                           image_count: @brand_image_count, 
-                          recent_tweets: @brand_recent_tweets
+                          recent_tweets: @brand_recent_tweets,
+                          receent_images: @brand_recent_images
                         }
                       }
   end
