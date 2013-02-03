@@ -58,6 +58,12 @@ end
   }
   status_json = Oj.dump(status_small)
 
+  #bail out if a retweet
+  if status.text.start_with? "RT "
+    log.debug " -> Ignored tweet since it's a stupid RT!"
+    next
+  end
+
   #try to detect images
   detected_images = []
   status.urls.each do |url|
