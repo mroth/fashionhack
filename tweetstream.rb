@@ -28,7 +28,14 @@ log.level = Logger::DEBUG
 
 #TODO: load terms from json
 #TODO: create name->twitter hash map
-TERMS = ["#fashionhack","@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
+
+if ENV["TERMS_CONF"]
+  designer_map = Oj.load_file(ENV["TERMS_CONF"])
+  term_map = designer_map.invert
+  TERMS = designer_map.to_a.flatten
+else
+  TERMS = ["#fashionhack","@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
+end
 
 puts "Setting up a stream to track terms '#{TERMS}'..."
 @client = TweetStream::Client.new
@@ -64,7 +71,12 @@ end
   
   matched_terms = []
   TERMS.each do |term|
-   matched_terms.push(term) if status.text.include? term
+    if status.text.include? term
+      if term_map and term_map.has_key?(term)
+        term = term_map[term]
+      end
+      matched_terms.push(term)
+    end
   end
 
   #for each matched term, push to the results
