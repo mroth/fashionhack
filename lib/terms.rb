@@ -1,8 +1,8 @@
 class Terms
   attr_reader :designer_map, :term_map, :terms
 
-  def initialize
-    @designer_map = Oj.load_file(ENV["TERMS_CONF"] || 'config/cfda.twitter.json')
+  def initialize(designer_map)
+    @designer_map = designer_map
     @term_map = designer_map.invert
     @terms = designer_map.to_a.flatten
     @designer_map.each {|k,v| hashtag = v.gsub(/\s+/, ""); term_map[hashtag] = k; @terms << hashtag}

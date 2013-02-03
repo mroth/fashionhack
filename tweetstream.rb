@@ -29,7 +29,7 @@ log.level = Logger::DEBUG if VERBOSE
 
 #DONE: load terms from json
 #DONE: create name->twitter hash map
-TERMS=Terms.new()
+TERMS=Terms.new(Oj.load_file('config/cfda.twitter.json'))
 
 puts "Setting up a stream to track terms '#{TERMS.list}'..."
 @client = TweetStream::Client.new

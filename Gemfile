@@ -17,3 +17,7 @@ group :streamer do
   gem 'tweetstream', '~> 2.4.0'
   gem 'colored'
 end
+
+group :development, :test do
+  gem 'rspec'
+end
