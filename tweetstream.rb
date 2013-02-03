@@ -44,9 +44,9 @@ end
 @client.track(TERMS.list) do |status|
   puts " ** @#{status.user.screen_name}: ".green + status.text.white if VERBOSE
   status_small = {
-    :id => status.id.to_s,
-    :text => status.text,
-    :username => status.user.screen_name
+    'id' => status.id.to_s,
+    'text' => status.text,
+    'username' => status.user.screen_name
   }
   status_json = Oj.dump(status_small)
 
