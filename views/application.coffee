@@ -3,38 +3,24 @@ methods related to the polling UI
 ###
 @refreshUIFromServer = ->
   $.get('/data', (response) -> 
-    refreshCountUI 'cat', response.cat_count
-    refreshCountUI 'dog', response.dog_count
-    refreshTweetUI('cat', response.cat_tweets)
-    refreshTweetUI('dog', response.dog_tweets)
+    refreshLeaderboard response.details
   , "json")
 
-refreshCountUI = (animal, count) ->
-  count_selector = $("\##{animal}_count #count")
-  diff_selector  = $("\##{animal}_count #diff")
-  
-  prev_count = parseInt count_selector.text()
-  diff = count - prev_count
-
-  count_selector.text count
-  count_selector.effect( "highlight", {}, 2000)
-
-  if !isNaN(diff) && diff != 0
-    diff_selector.text( "+" + diff )
-    diff_selector.show()
-    diff_selector.fadeOut(2000)
-
-refreshTweetUI = (animal, tweets) ->
-  selector = $("\##{animal}_tweets #tweets")
-  selector.hide()
-  selector.empty()
-  for tweet in tweets
-    do (tweet) ->
-      selector.append formattedTweet(tweet)
-  selector.fadeIn('fast')
+refreshLeaderboard = (details) ->
+  ll=$("#leaderboard ol")
+  ll.hide()
+  ll.empty()
+  for brand in details
+    ll.append("
+      <li>
+        #{brand.name} (#{brand.info.score})<br/>
+        #{formattedTweet(brand.info.recent_tweets[0])}
+      </li>")
+  ll.fadeIn()
 
 ###
 methods related to the streaming UI
+NONE OF THIS BEING USED IN CURRENT APP LEFTOVER FROM GOODVSEVIL BUT HERE TILL I CAN STEAL FROM
 ###
 @startStreaming = ->
   @source = new EventSource('/subscribe')
@@ -68,11 +54,11 @@ general purpose UI helpers
 ###
 formattedTweet = (tweet) ->
   tweet_url = "http://twitter.com/#{tweet.username}/status/#{tweet.id}"
-  "<li><strong>@#{tweet.username}:</strong> #{tweet.text} <a href='#{tweet_url}'>\#</a></li>"
+  "<span class='tweet'><strong>@#{tweet.username}:</strong> #{tweet.text} <a href='#{tweet_url}'>\#</a></span>"
 
 @startRefreshTimer = ->
   # refreshUIFromServer()
-  @refreshTimer = setInterval refreshUIFromServer, 3000
+  @refreshTimer = setInterval refreshUIFromServer, 9000
 
 @stopRefreshTimer = ->
   clearInterval(@refreshTimer)
@@ -96,7 +82,4 @@ formattedTweet = (tweet) ->
 $ ->
   setTimeout(refreshUIFromServer, 1)
   startRefreshTimer()
-
-  $('#stream_enabled_checkbox').change ->
-    streamingToggled()
 
