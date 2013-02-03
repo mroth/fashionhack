@@ -23,20 +23,29 @@ get '/application.js' do
 end
 
 get '/data' do
-  @count = REDIS.mget 'cat_count', 'dog_count'
-  @dog_tweets = REDIS.lrange 'dog_tweets',0,9
-  @cat_tweets = REDIS.lrange 'cat_tweets',0,9
-  @dog_tweets.map! {|t| JSON.parse(t)}
-  @cat_tweets.map! {|t| JSON.parse(t)}
-  @cat_count = @count[0].to_i
-  @dog_count = @count[1].to_i
+  @rank = REDIS.zrevrange 'scores',0,9
+
+  brand_details = []
+  @rank.each do |brand|
+    # REDIS.pipelined do
+      @brand_score = REDIS.zscore "scores",brand
+      @brand_image_count = REDIS.get "#{brand}_image_count"
+      @brand_recent_tweets = REDIS.lrange "#{brand}_tweets",0,4
+      @brand_recent_tweets.map! { |t| JSON.parse(t) }
+    # end
+    brand_details << {name: brand, 
+                        info: {
+                          score: @brand_score, 
+                          image_count: @brand_image_count, 
+                          recent_tweets: @brand_recent_tweets
+                        }
+                      }
+  end
 
   content_type :json
   Oj.dump( {
-    'cat_count'  => @cat_count,
-    'dog_count'  => @dog_count,
-    'cat_tweets' => @cat_tweets,
-    'dog_tweets' => @dog_tweets
+    'rank'  => @rank,
+    'details' => brand_details
   } )
 end
 
