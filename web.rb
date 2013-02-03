@@ -23,7 +23,7 @@ get '/application.js' do
 end
 
 get '/data' do
-  @rank = REDIS.zrevrange 'scores',0,9
+  @rank = REDIS.zrevrange 'scores',0,19
 
   brand_details = []
   @rank.each do |brand|
