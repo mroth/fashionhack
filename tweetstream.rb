@@ -33,7 +33,8 @@ if ENV["TERMS_CONF"]
   designer_map = Oj.load_file(ENV["TERMS_CONF"])
   term_map = designer_map.invert
   TERMS = designer_map.to_a.flatten
-  designer_map.each {|k,v| TERMS << v.gsub!(/\s+/, "")}
+  designer_map.each {|k,v| hashtag = v.gsub(/\s+/, ""); term_map[hashtag] = k; TERMS << hashtag}
+  TERMS.uniq!
 else
   TERMS = ["#fashionhack","@dkny", "@DVF", "@prabalgurung", "@MarcJacobsIntl", "@RebeccaMinkoff", "@MichaelKors", "@rag_bone"]
 end
