@@ -13,7 +13,7 @@ refreshImages = (latest_images) ->
   il.empty()
   for image in latest_images
     il.append("<li style='display:inline; list-style-type: none;
-'><a href='#{image}'><img src='#{image}/media?size=t'></a></li>")
+'><a href='#{image.image}'><img src='#{image.image}/media?size=t' title='#{image.name}' alt='#{image.name}'></a></li>")
   il.fadeIn()
 
 refreshLeaderboard = (details) ->
