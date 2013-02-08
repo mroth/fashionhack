@@ -12,7 +12,8 @@ refreshImages = (latest_images) ->
   il.hide()
   il.empty()
   for image in latest_images
-    il.append("<li><a href='#{image}'> * </a></li>")
+    il.append("<li style='display:inline; list-style-type: none;
+'><a href='#{image}'><img src='#{image}/media?size=t'></a></li>")
   il.fadeIn()
 
 refreshLeaderboard = (details) ->
