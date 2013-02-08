@@ -24,7 +24,8 @@ end
 
 get '/data' do
   @rank = REDIS.zrevrange 'scores',0,19
-  @latest_images = REDIS.lrange 'latest_images',0,9
+  #@latest_images = REDIS.lrange 'latest_images',0,9
+  @latest_images = []
   brand_details = []
   @rank.each do |brand|
     # REDIS.pipelined do
@@ -42,6 +43,9 @@ get '/data' do
                           recent_images: @brand_recent_images
                         }
                       }
+    if @brand_recent_images[0]
+      @latest_images.push({name: brand, image: @brand_recent_images[0]})
+    end
   end
 
   content_type :json
